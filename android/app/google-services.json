@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "953629103492",
+    "project_id": "calidad-8ac9e",
+    "storage_bucket": "calidad-8ac9e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953629103492:android:4c382eb5b6a9291ae879d1",
+        "android_client_info": {
+          "package_name": "com.example.calidad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953629103492-sr7lvsu7659ms74232n1itp82s8f34c4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaF0vjCBIoQD5xLZQlsR5bgcOWcTqPDLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953629103492-sr7lvsu7659ms74232n1itp82s8f34c4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
