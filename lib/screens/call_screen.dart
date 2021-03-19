@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:calidad/config/agora_config.dart';
 import 'package:calidad/model/call.dart';
+
 import 'package:calidad/provider/user_provider.dart';
 import 'package:calidad/screens/vitals_screen.dart';
+
 import 'package:calidad/utils/call_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class CallScreen extends StatefulWidget {
 
 class _CallScreenState extends State<CallScreen> {
   final CallMethods callMethods = CallMethods();
+  String bottomModalState = 'Vitals';
 
   UserProvider userProvider;
   StreamSubscription callStreamSubscription;
@@ -35,6 +38,7 @@ class _CallScreenState extends State<CallScreen> {
   @override
   void initState() {
     super.initState();
+
     addPostFrameCallback();
     initializeAgora();
   }
@@ -56,7 +60,6 @@ class _CallScreenState extends State<CallScreen> {
     await AgoraRtcEngine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await AgoraRtcEngine.joinChannel(null, widget.call.channelId, null, 0);
-    
   }
 
   addPostFrameCallback() {
@@ -70,7 +73,7 @@ class _CallScreenState extends State<CallScreen> {
         switch (ds.data) {
           case null:
             // snapshot is null which means that call is hanged and documents are deleted
-            Navigator.pop(context);
+            // Navigator.pop(context);
             break;
 
           default:
@@ -217,8 +220,8 @@ class _CallScreenState extends State<CallScreen> {
         return Container(
             child: Column(
           children: <Widget>[
-            _expandedVideoRow([views[0]]),
-            _expandedVideoRow([views[1]])
+            _expandedVideoRow([views[1]]),
+            _expandedVideoRow([views[0]])
           ],
         ));
       case 3:
@@ -304,7 +307,7 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   /// Toolbar layout
-  Widget _toolbar() {
+  Widget _toolbar(BuildContext ctx) {
     return Container(
       alignment: Alignment.bottomCenter,
       padding: const EdgeInsets.symmetric(vertical: 48),
@@ -324,9 +327,14 @@ class _CallScreenState extends State<CallScreen> {
             padding: const EdgeInsets.all(12.0),
           ),
           RawMaterialButton(
-            onPressed: () => callMethods.endCall(
-              call: widget.call,
-            ),
+            onPressed: () {
+              callMethods.endCall(
+                call: widget.call,
+              );
+              CallMethods call = CallMethods();
+              call.deleteData();
+              Navigator.pop(context);
+            },
             child: Icon(
               Icons.call_end,
               color: Colors.white,
@@ -350,11 +358,16 @@ class _CallScreenState extends State<CallScreen> {
             padding: const EdgeInsets.all(12.0),
           ),
           RawMaterialButton(
-            onPressed: () {
-              Navigator.push(context,
-              MaterialPageRoute(builder: (context) {
-            return VitalScreen();
-          }));
+            onPressed: () async {
+              
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => VitalScreen(
+                    call: widget.call,
+                  ),
+                ),
+              );
+              callMethods.pauseCall(call: widget.call);
             },
             child: Icon(
               Icons.pending_actions_rounded,
@@ -391,7 +404,7 @@ class _CallScreenState extends State<CallScreen> {
           children: <Widget>[
             _viewRows(),
             // _panel(),
-            _toolbar(),
+            _toolbar(context),
           ],
         ),
       ),

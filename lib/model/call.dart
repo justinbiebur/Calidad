@@ -10,6 +10,7 @@ class Call {
   String channelId;
 
   bool hasDialled;
+  String temp;
 
   Call(
     {
@@ -20,7 +21,7 @@ class Call {
       this.receiverName,
       this.receiverPic,
       this.channelId,
-      this.hasDialled
+      this.hasDialled,
     }
   );
 

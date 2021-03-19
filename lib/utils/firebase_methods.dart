@@ -1,76 +1,77 @@
-import 'package:calidad/model/user.dart';
+import 'package:calidad/model/user.dart' as user;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class FirebaseMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn();
-  static final Firestore firestore = Firestore.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static final CollectionReference _userCollection =
       _firestore.collection("user");
 
-  static final Firestore _firestore = Firestore.instance;
+  
 
-  //user class
-  User user = User();
-
-  Future<FirebaseUser> getCurrentUser() async {
-    FirebaseUser currentUser;
-    currentUser = await _auth.currentUser();
+  
+  user.User us= new user.User();
+  Future<User > getCurrentUser() async {
+    User currentUser;
+    currentUser =  _auth.currentUser;
 
     return currentUser;
   }
 
-  Future<User> getUserDetails() async {
-    FirebaseUser currentUser = await getCurrentUser();
+  Future<user.User> getUserDetails() async {
+    User currentUser = await getCurrentUser();
     DocumentSnapshot documentSnapshot =
-        await _userCollection.document(currentUser.uid).get();
+        await _userCollection.doc(currentUser.uid).get();
         
-    return User.fromMap(documentSnapshot.data);
+    return user.User.fromMap(documentSnapshot.data());
   }
 
-  Future<FirebaseUser> signIn() async {
+  Future<User> signIn() async {
     GoogleSignInAccount _signInAccount = await _googleSignIn.signIn();
     GoogleSignInAuthentication _signInAuthentication =
         await _signInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
+    final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: _signInAuthentication.accessToken,
         idToken: _signInAuthentication.idToken);
 
-    AuthResult authResult = await _auth.signInWithCredential(credential);
-    FirebaseUser user = authResult.user;
+    UserCredential authResult = await _auth.signInWithCredential(credential);
+    User user = authResult.user;
     return user;
   }
 
-  Future<bool> authenticateUser(FirebaseUser user) async {
-    QuerySnapshot result = await firestore
+  Future<bool> authenticateUser(User user) async {
+    QuerySnapshot result = await _firestore
         .collection("user")
         .where("email", isEqualTo: user.email)
-        .getDocuments();
+        .get();
 
-    final List<DocumentSnapshot> docs = result.documents;
+    final List<DocumentSnapshot> docs = result.docs;
 
     return docs.length == 0 ? true : false;
   }
 
-  Future<void> addDataToDb(FirebaseUser currentUser) async {
+  Future<void> addDataToDb(User currentUser) async {
     String username = currentUser.email.split('@')[0];
-
-    user = User(
+    
+    user.User cUser = user.User(
         uid: currentUser.uid,
         email: currentUser.email,
         name: currentUser.displayName,
-        profilePhoto: currentUser.photoUrl,
+        profilePhoto: currentUser.photoURL,
         username: username);
 
-    firestore
+    
+    _firestore
         .collection("user")
-        .document(currentUser.uid)
-        .setData(user.toMap(user));
+        .doc(currentUser.uid)
+        .set(us.toMap(cUser));
   }
 
   Future<void> signOut() async {
@@ -78,18 +79,31 @@ class FirebaseMethods {
     return await _auth.signOut();
   }
 
-  Future<List<User>> fetchAllUsers(User currentUser) async {
-    List<User> userList = List<User>();
+  Future<List<user.User>> fetchAllUsers(user.User currentUser) async {
+    List<user.User> userList = List<user.User>();
 
     QuerySnapshot querySnapshot =
-        await firestore.collection("user").getDocuments();
+        await _firestore.collection("user").get();
 
-        print("QS ${querySnapshot.documents.length}");
-    for (var i = 0; i < querySnapshot.documents.length; i++) {
-      if (querySnapshot.documents[i].documentID != currentUser.uid) {
-        userList.add(User.fromMap(querySnapshot.documents[i].data));
+        print("QS ${querySnapshot.docs.length}");
+    for (var i = 0; i < querySnapshot.docs.length; i++) {
+      if (querySnapshot.docs[i].id != currentUser.uid) {
+        userList.add(user.User.fromMap(querySnapshot.docs[i].data()));
       }
     }
     return userList;
   }
+
+  // Future<List<User>> fetchAllUsers() async {
+  //   List<User> userList = List<User>();
+
+  //   QuerySnapshot querySnapshot =
+  //       await firestore.collection("docotrs").getDocuments();
+
+  //       print("QS ${querySnapshot.documents.length}");
+  //   for (var i = 0; i < querySnapshot.documents.length; i++) {
+  //       userList.add(User.fromMap(querySnapshot.documents[i].data));
+  //   }
+  //   return userList;
+  // }
 }

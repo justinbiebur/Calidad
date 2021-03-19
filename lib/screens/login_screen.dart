@@ -24,7 +24,8 @@ class LoginScreenState extends State<LoginScreen> {
           ),
           isLoginPressed
               ? Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                  ),
                 )
               : Container()
         ],
@@ -50,7 +51,7 @@ class LoginScreenState extends State<LoginScreen> {
       isLoginPressed = true;
     });
 
-    FirebaseUser user = await _authMethods.signIn();
+    User user = await _authMethods.signIn();
 
     if (user != null) {
       authenticateUser(user);
@@ -60,7 +61,7 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void authenticateUser(FirebaseUser user) {
+  void authenticateUser(User user) {
     _authMethods.authenticateUser(user).then((isNewUser) {
       setState(() {
         isLoginPressed = false;
