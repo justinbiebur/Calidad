@@ -22,6 +22,7 @@ environment:
 
 
 dependencies:
+  flutter_sound: ^8.0.0+6
   image_picker: ^0.7.3
   agora_rtc_engine: ^1.0.8
   firebase_storage: ^8.0.0
@@ -31,7 +32,7 @@ dependencies:
   android_intent: ^2.0.0
   path: ^1.7.0
   path_provider: ^2.0.0
-  provider: ^4.0.3
+  provider: ^5.0.0
   usb_serial: ^0.2.4
   google_sign_in: 4.0.2
   firebase_auth: ^1.0.1

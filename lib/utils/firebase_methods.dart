@@ -33,16 +33,19 @@ class FirebaseMethods {
   }
 
   Future<User> signIn() async {
-    GoogleSignInAccount _signInAccount = await _googleSignIn.signIn();
-    GoogleSignInAuthentication _signInAuthentication =
-        await _signInAccount.authentication;
+    // GoogleSignInAccount _signInAccount = await _googleSignIn.signIn();
+    // GoogleSignInAuthentication _signInAuthentication =
+    //     await _signInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: _signInAuthentication.accessToken,
-        idToken: _signInAuthentication.idToken);
+    // final AuthCredential credential = GoogleAuthProvider.credential(
+    //     accessToken: _signInAuthentication.accessToken,
+    //     idToken: _signInAuthentication.idToken);
 
-    UserCredential authResult = await _auth.signInWithCredential(credential);
-    User user = authResult.user;
+    // UserCredential authResult = await _auth.signInWithCredential(credential);
+    // User user = authResult.user;
+    // return user;
+    UserCredential authResult= await _auth.signInWithEmailAndPassword(email:"demouser@gmail.com", password: "123456789");
+    User user=authResult.user;
     return user;
   }
 
