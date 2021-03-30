@@ -101,7 +101,8 @@ Future<String> get _localPath async{
       
       body: Container(
           child: Center(
-            child: Row(
+            child:Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [
+              Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
             Container(
@@ -110,7 +111,7 @@ Future<String> get _localPath async{
                   
                   getRecorderFn()();
                 },
-                child: Text(_mRecorder.isRecording ? 'Stop' : 'Record'),
+                child: Text(_mRecorder.isRecording ? 'Stop' : 'Lungs'),
               ),
             ),
             Container(
@@ -123,6 +124,54 @@ Future<String> get _localPath async{
             )
         ],
       ),
+
+       Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+            Container(
+              child: ElevatedButton(
+                onPressed: (){
+                  
+                  getRecorderFn()();
+                },
+                child: Text(_mRecorder.isRecording ? 'Stop' : 'Heart'),
+              ),
+            ),
+            Container(
+              child: ElevatedButton(
+                onPressed:_isUploading?null: () async {
+                 uploadToStorage(uid);
+                },
+                child: Icon(Icons.upload_rounded)
+              ),
+            )
+        ],
+      ),
+
+       Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+            Container(
+              child: ElevatedButton(
+                onPressed: (){
+                  
+                  getRecorderFn()();
+                },
+                child: Text(_mRecorder.isRecording ? 'Stop' : 'Abdomen'),
+              ),
+            ),
+            Container(
+              child: ElevatedButton(
+                onPressed:_isUploading?null: () async {
+                 uploadToStorage(uid);
+                },
+                child: Icon(Icons.upload_rounded)
+              ),
+            )
+        ],
+      ),
+            ],)
+            
           )),
     );
   }
@@ -139,7 +188,7 @@ Future uploadToStorage(String uid) async {
       
       File file = File(dir+'test.wav');
       
-      print("File exists at ${dir}test.aac  ?");
+      print("File exists at ${dir}test.wav  ?");
       print(await file.exists());
       _isUploading=true;
       setState(() {});
