@@ -64,8 +64,8 @@ Future<String> get _localPath async{
     String dir=await _localPath;
     _mRecorder
         .startRecorder(
-      toFile: dir+'test',
-      codec: Codec.aacMP4,
+      toFile: dir+'test.wav',
+      codec: Codec.pcm16WAV,
     )
         .then((value) {
       setState(() {});
@@ -137,7 +137,7 @@ Future uploadToStorage(String uid) async {
       final String today = ('$month-$date');
       String dir=await _localPath;
       
-      File file = File(dir+'test');
+      File file = File(dir+'test.wav');
       
       print("File exists at ${dir}test.aac  ?");
       print(await file.exists());
@@ -147,9 +147,9 @@ Future uploadToStorage(String uid) async {
           .ref()
           .child("audio")
           .child(today)
-          .child(storageId);
+          .child(storageId+'.wav');
       UploadTask uploadTask =
-          ref.putFile(file, SettableMetadata(contentType: 'audio/aac'));
+          ref.putFile(file, SettableMetadata(contentType: 'audio/wav'));
 
       String url = await uploadTask.then((e) async {
         
