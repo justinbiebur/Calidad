@@ -48,6 +48,16 @@ class CallMethods {
       return false;
     }
   }
+  Future<bool> addStethoscope({String url}) async {
+    try{
+      Map<String,String> vitals = Map();
+      vitals['stethoscope'] = url;
+      await callCollection.doc("data").set(vitals);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
 
   Future<bool> deleteData()async {
     try{

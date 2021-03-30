@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:calidad/provider/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:calidad/utils/call_methods.dart';
 
 class Stethoscope extends StatefulWidget {
   @override
@@ -101,77 +102,29 @@ Future<String> get _localPath async{
       
       body: Container(
           child: Center(
-            child:Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [
-              Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-            Container(
-              child: ElevatedButton(
-                onPressed: (){
-                  
-                  getRecorderFn()();
-                },
-                child: Text(_mRecorder.isRecording ? 'Stop' : 'Lungs'),
-              ),
-            ),
-            Container(
-              child: ElevatedButton(
-                onPressed:_isUploading?null: () async {
-                 uploadToStorage(uid);
-                },
-                child: Icon(Icons.upload_rounded)
-              ),
-            )
-        ],
-      ),
-
-       Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-            Container(
-              child: ElevatedButton(
-                onPressed: (){
-                  
-                  getRecorderFn()();
-                },
-                child: Text(_mRecorder.isRecording ? 'Stop' : 'Heart'),
-              ),
-            ),
-            Container(
-              child: ElevatedButton(
-                onPressed:_isUploading?null: () async {
-                 uploadToStorage(uid);
-                },
-                child: Icon(Icons.upload_rounded)
-              ),
-            )
-        ],
-      ),
-
-       Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-            Container(
-              child: ElevatedButton(
-                onPressed: (){
-                  
-                  getRecorderFn()();
-                },
-                child: Text(_mRecorder.isRecording ? 'Stop' : 'Abdomen'),
-              ),
-            ),
-            Container(
-              child: ElevatedButton(
-                onPressed:_isUploading?null: () async {
-                 uploadToStorage(uid);
-                },
-                child: Icon(Icons.upload_rounded)
-              ),
-            )
-        ],
-      ),
-            ],)
             
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+            Container(
+              child: ElevatedButton(
+                onPressed: (){
+                  
+                  getRecorderFn()();
+                },
+                child: Text(_mRecorder.isRecording ? 'Stop' : 'Record'),
+              ),
+            ),
+            Container(
+              child: ElevatedButton(
+                onPressed:_isUploading?null: () async {
+                 uploadToStorage(uid);
+                },
+                child: Icon(Icons.upload_rounded)
+              ),
+            )
+        ],
+      ),
           )),
     );
   }
@@ -204,6 +157,9 @@ Future uploadToStorage(String uid) async {
         
         return await ref.getDownloadURL();
       });
+     
+      CallMethods cm = CallMethods();
+      await cm.addStethoscope(url : url);
       print(url);
       _isUploading=false;
       setState(() {
