@@ -38,6 +38,17 @@ class CallMethods {
     }
   }
 
+  Future<bool> addOtoscope({String url}) async {
+    try{
+      Map<String,String> vitals = Map();
+      vitals["otoscope"] = url;
+      await callCollection.doc("data").set(vitals);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
   Future<bool> deleteData()async {
     try{
       await callCollection.doc("data").delete();

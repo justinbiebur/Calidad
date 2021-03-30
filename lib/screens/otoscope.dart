@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:calidad/provider/user_provider.dart';
+import 'package:calidad/utils/call_methods.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class Otoscope extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   await LaunchApp.openApp(
-                    androidPackageName: 'com.tony.usbcamera.molink',
+                    androidPackageName: 'com.shenyaocn.android.usbcamera',
                     openStore: true,
                   );
                 },
@@ -76,6 +77,9 @@ class Otoscope extends StatelessWidget {
         
         return await ref.getDownloadURL();
       });
+
+      CallMethods cm = CallMethods();
+      await cm.addOtoscope(url : url);
       print(url);
     } catch (error) {
       print(error);
