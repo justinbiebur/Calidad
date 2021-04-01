@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:calidad/utils/permissions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -41,15 +42,13 @@ class _StethoscopeState extends State<Stethoscope> {
 
   Future<void> openTheRecorder() async {
     print("open recorder called");
-    var status = (await PermissionHandler().requestPermissions(
-        [PermissionGroup.microphone]))[PermissionGroup.microphone];
+    var status = await Permission.microphone.request();
 
     print(status);
     if (status != PermissionStatus.granted) {
       throw RecordingPermissionException('Microphone permission not granted');
     }
-    status = (await PermissionHandler().requestPermissions(
-        [PermissionGroup.storage]))[PermissionGroup.storage];
+    status = await Permission.storage.request();
 
 
     await _mRecorder.openAudioSession();

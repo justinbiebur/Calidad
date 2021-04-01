@@ -22,6 +22,7 @@ environment:
 
 
 dependencies:
+  mic_stream: ^0.5.0
   flutter_sound: ^8.0.0+6
   image_picker: ^0.7.3
   agora_rtc_engine: ^1.0.8
@@ -36,7 +37,7 @@ dependencies:
   usb_serial: ^0.2.4
   google_sign_in: 4.0.2
   firebase_auth: ^1.0.1
-  permission_handler: 3.0.0
+  permission_handler: ^6.0.1
   cloud_firestore: ^1.0.1
   flutter:
     sdk: flutter

@@ -1,9 +1,10 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:calidad/config/agora_config.dart';
 import 'package:calidad/model/call.dart';
-
+import 'package:path_provider/path_provider.dart';
 import 'package:calidad/provider/user_provider.dart';
 import 'package:calidad/screens/vitals_screen.dart';
 
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
+import 'package:mic_stream/mic_stream.dart';
 class CallScreen extends StatefulWidget {
   final Call call;
 
@@ -169,6 +171,7 @@ class _CallScreenState extends State<CallScreen> {
         _users.remove(uid);
       });
     };
+    
 
     AgoraRtcEngine.onFirstRemoteVideoFrame = (
       int uid,
@@ -308,6 +311,70 @@ class _CallScreenState extends State<CallScreen> {
 
   /// Toolbar layout
   Widget _toolbar(BuildContext ctx) {
+
+
+    Future<String> _localPath() async{
+  final directory=await  getExternalStorageDirectory();
+  return directory.path;
+}
+
+List<List<int>> audioData=[];
+
+Future<void> save(List<int> data, int sampleRate,String path) async {
+    File recordedFile = File(path);
+
+    var channels = 1;
+
+    int byteRate = ((16 * sampleRate * channels) / 8).round();
+
+    var size = data.length;
+
+    var fileSize = size + 36;
+
+    Uint8List header = Uint8List.fromList([
+      // "RIFF"
+      82, 73, 70, 70,
+      fileSize & 0xff,
+      (fileSize >> 8) & 0xff,
+      (fileSize >> 16) & 0xff,
+      (fileSize >> 24) & 0xff,
+      // WAVE
+      87, 65, 86, 69,
+      // fmt
+      102, 109, 116, 32,
+      // fmt chunk size 16
+      16, 0, 0, 0,
+      // Type of format
+      1, 0,
+      // One channel
+      channels, 0,
+      // Sample rate
+      sampleRate & 0xff,
+      (sampleRate >> 8) & 0xff,
+      (sampleRate >> 16) & 0xff,
+      (sampleRate >> 24) & 0xff,
+      // Byte rate
+      byteRate & 0xff,
+      (byteRate >> 8) & 0xff,
+      (byteRate >> 16) & 0xff,
+      (byteRate >> 24) & 0xff,
+      // Uhm
+      ((16 * channels) / 8).round(), 0,
+      // bitsize
+      16, 0,
+      // "data"
+      100, 97, 116, 97,
+      size & 0xff,
+      (size >> 8) & 0xff,
+      (size >> 16) & 0xff,
+      (size >> 24) & 0xff,
+      ...data
+    ]);
+    return recordedFile.writeAsBytesSync(header, flush: true);
+  }
+    StreamSubscription<List<int>> listener;
+    
+    
     return Container(
       alignment: Alignment.bottomCenter,
       padding: const EdgeInsets.symmetric(vertical: 48),
@@ -346,7 +413,14 @@ class _CallScreenState extends State<CallScreen> {
             padding: const EdgeInsets.all(15.0),
           ),
           RawMaterialButton(
-            onPressed: _onSwitchCamera,
+            onPressed: ()async{
+              await listener.cancel();
+               List<int> flat=audioData.expand((element) => element).toList();
+               print(flat);
+               var filename=await _localPath();
+              var createdFile=File(filename+'/data.wav').create(recursive: true);
+              await save(flat, 44100, filename+'/data.wav');
+              },
             child: Icon(
               Icons.switch_camera,
               color: Colors.blueAccent,
@@ -360,14 +434,14 @@ class _CallScreenState extends State<CallScreen> {
           RawMaterialButton(
             onPressed: () async {
               
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => VitalScreen(
-                    call: widget.call,
-                  ),
-                ),
-              );
-              callMethods.pauseCall(call: widget.call);
+              
+              
+              // Init a new Stream
+                  Stream<List<int>> stream = await MicStream.microphone(sampleRate: 44100);
+                  print("stream ");
+                  // Start listening to the stream
+                   listener = stream.listen((samples){audioData.add(samples); });
+  
             },
             child: Icon(
               Icons.pending_actions_rounded,
