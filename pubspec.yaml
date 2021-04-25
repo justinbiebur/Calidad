@@ -18,12 +18,14 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-
+  sdk: ">=2.7.0"
+dependency_overrides:
+  file: ^5.0.4
 
 dependencies:
-  mic_stream: ^0.5.0
-  flutter_sound: ^8.0.0+6
+  
+  # mic_stream: ^0.5.0
+ 
   image_picker: ^0.7.3
   agora_rtc_engine: ^1.0.8
   firebase_storage: ^8.0.0
@@ -39,6 +41,7 @@ dependencies:
   firebase_auth: ^1.0.1
   permission_handler: ^6.0.1
   cloud_firestore: ^1.0.1
+  flutter_audio_recorder: ^0.5.5
   flutter:
     sdk: flutter
   # The following adds the Cupertino Icons font to your application.
